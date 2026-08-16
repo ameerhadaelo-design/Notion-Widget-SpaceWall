@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emris ~ SpaceWall</title>
+<style>
+
+  :root{
+    --void:      #ece5d8;
+    --leather:   #4a2f1a;
+    --leather-2: #6b4526;
+    --parchment: #f4ecdc;
+    --parchment-2:#e6dcc6;
+    --rust:      #9c7a4a;
+    --rust-dk:   #5c3a1f;
+    --ember:     #7a4a24;
+    --ember-lt:  #96602f;
+    --gold:      #b8863f;
+    --olive:     #5c6b35;
+    --ink:       #2e2418;
+    --ghost:     #f4ecdc;
+    --link:      #5c3a1f;
+
+    --display: 'Georgia', 'Times New Roman', serif;
+    --type:    'Georgia', 'Times New Roman', serif;
+    --body:    'Georgia', 'Times New Roman', serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html,body{
+    margin:0; padding:0; width:100%; min-height:100%;
+    background: var(--void);
+    font-family: var(--body);
+    color: var(--ink);
+  }
+
+  html{ overflow-x: auto; }
+  body{ min-width: 1400px; }
+
+  body{
+    background: var(--void);
+    padding-bottom: 40px;
+  }
+
+  a { color: var(--link); }
+
+  /* ---------- top chrome ---------- */
+  .topbar{
+    background: var(--rust-dk);
+    border-bottom: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    padding: 10px 16px;
+    display:flex; align-items:center; gap:18px;
+    position: sticky; top:0; z-index: 50;
+  }
+  .topbar .wordmark{
+    font-family: var(--display);
+    font-size: 26px;
+    font-weight: bold;
+    color: #ffffff;
+    letter-spacing: .5px;
+  }
+  .topbar .who{ font-size:12px; color: #ffffff; white-space:nowrap; margin-left:auto; }
+  .topbar .who b{ color: var(--gold); }
+
+  .navstrip{
+    background: var(--rust);
+    border-bottom: 1px solid var(--rust-dk);
+    padding: 6px 16px;
+    display:flex; gap:16px; flex-wrap:nowrap;
+    font-size:12px;
+    position: sticky; top:44px; z-index: 49;
+  }
+  .navstrip span{
+    color: #ffffff; opacity:.95; padding:2px 2px;
+    white-space: nowrap;
+    cursor: default;
+    font-weight: bold;
+  }
+  .navstrip span:first-child{
+    text-decoration: underline;
+  }
+
+  .ticker{
+    background: var(--olive);
+    color: var(--ghost);
+    font-family: var(--type);
+    font-size: 11px;
+    padding: 4px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--rust-dk);
+  }
+  .ticker span{
+    display: inline-block;
+    padding-left: 100%;
+    animation: scrollit 26s linear infinite;
+  }
+  @keyframes scrollit{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
+  @media (prefers-reduced-motion: reduce){
+    .ticker span{ animation: none; padding-left: 2%; }
+  }
+
+  /* ---------- page shell ---------- */
+  .page{
+    max-width: 1360px;
+    margin: 22px auto;
+    padding: 0 18px;
+    display: grid;
+    grid-template-columns: 240px 1fr 280px;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .card{
+    background: var(--parchment);
+    border: 1px solid var(--rust);
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(27,63,122,.15);
+    overflow: hidden;
+  }
+  .card h2{
+    margin:0;
+    font-family: var(--display);
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--ghost);
+    background: var(--ember);
+    border-bottom: 1px solid var(--rust-dk);
+    padding: 7px 10px;
+    letter-spacing: .2px;
+  }
+  .card .inner{ padding: 12px; }
+
+  /* ---------- left column ---------- */
+  .hello-box{
+    background: var(--ember);
+    color: #ffffff;
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: bold;
+    padding: 8px 10px;
+    border-radius: 3px 3px 0 0;
+  }
+  .stats-box{
+    background: var(--rust-dk);
+    color: #ffffff;
+    font-size: 12px;
+    padding: 8px 10px;
+    text-align:center;
+  }
+  .stats-box .num{ color: var(--gold); font-weight:bold; font-size:15px; }
+  .stats-box .lbl{ font-size:11px; opacity:.85; margin-bottom:4px; }
+  .stats-box .row{ margin-bottom:8px; }
+
+  .pfp-wrap{
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: var(--leather-2);
+    background-size: cover;
+    background-position: center;
+    border: 3px solid var(--rust-dk);
+    display:grid; place-items:center;
+    overflow:hidden;
+  }
+
+  /* ==========================================================
+     PHOTOS — paste an image URL inside each url("...") below to
+     set that character's picture across the whole page.
+  ========================================================== */
+  .photo-emris{ background-image: url("photo ur here"); }
+  .photo-lucien{ background-image: url("photo ur here"); }
+  .photo-kiren{ background-image: url("photo ur here"); }
+  .photo-melanie{ background-image: url("photo ur here"); }
+  .photo-charlotte{ background-image: url("photo ur here"); }
+  .photo-ophelia{ background-image: url("photo ur here"); }
+
+  .name-row{ text-align:center; margin-top:8px; }
+  .name-row .name{
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--ember);
+  }
+  .name-row .status{
+    font-size: 11px; color: var(--rust-dk); font-style: italic;
+  }
+
+  .infobox{ font-size:11px; margin-top: 10px; }
+  .infobox table{ width:100%; border-collapse: collapse; }
+  .infobox td{ padding: 3px 2px; border-bottom: 1px dotted rgba(74,40,24,.4); vertical-align: top; }
+  .infobox td.k{ color: var(--rust-dk); width: 34%; font-weight:bold; }
+
+  .online-tag{
+    display:inline-block; width:7px; height:7px; border-radius:50%;
+    background:#5fae52; box-shadow:0 0 4px #5fae52; margin-right:5px;
+  }
+
+  .contactbox{ font-size:11px; }
+  .contactbox table{ width:100%; border-collapse: collapse; table-layout: fixed; }
+  .contactbox td{
+    padding: 4px 2px;
+    border-bottom: 1px dotted rgba(74,40,24,.4);
+    color: var(--link);
+    vertical-align: middle;
+  }
+  .contactbox tr:last-child td{ border-bottom:none; }
+  .contactbox tr.block td{ color: var(--ember); }
+  .contactbox td.icon-cell{ width:20px; }
+  .c-icon{
+    display:inline-block;
+    width:14px; height:14px;
+    background: var(--rust); border: 1px solid var(--rust-dk); border-radius:2px;
+  }
+  .contactbox tr.block .c-icon{ background: var(--ember); border-color: var(--rust-dk); }
+
+  /* ---------- right column ---------- */
+  .about p{ font-size:12px; line-height:1.6; margin: 0 0 8px; }
+  .about .aboutme-block{ font-size:12px; line-height:1.7; white-space: pre-wrap; }
+  .about .aboutme-block b{ color: var(--ember); }
+  .glitter{
+    font-family: var(--display);
+    font-size: 15px;
+    color: var(--olive);
+    text-shadow: 0 0 4px rgba(92,107,53,.35);
+  }
+
+  .friends-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
+    gap: 14px;
+  }
+  .friend-tile{
+    background: var(--parchment-2);
+    border: 1px solid var(--rust);
+    border-radius: 4px;
+    text-align:center;
+    padding: 8px 6px 6px;
+    cursor: pointer;
+    position: relative;
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .friend-tile:hover{ transform: translateY(-2px); border-color: var(--ember); }
+  .friend-avatar{
+    width: 84px; height:84px; margin: 0 auto 6px;
+    border-radius: 3px;
+    background: var(--rust);
+    background-size: cover;
+    background-position: center;
+    display:grid; place-items:center;
+    font-family: var(--display);
+    font-size: 32px;
+    color: #ffffff;
+    border: 1px solid var(--rust-dk);
+    overflow:hidden;
+    position: relative;
+  }
+  .friend-tile .fname{
+    font-size: 12px; color: var(--olive); font-weight:bold;
+  }
+  .friend-online{
+    position:absolute; top:6px; right:6px;
+    width:8px; height:8px; border-radius:50%;
+    background:#5fae52; box-shadow:0 0 4px #5fae52;
+  }
+
+  .comments{ margin-top: 10px; font-size:11px; }
+  .comment{
+    border-top: 1px dashed rgba(74,40,24,.4);
+    padding: 7px 0;
+  }
+  .comment b{ color: var(--olive); }
+  .comment .txt{ margin-top:2px; }
+  .comment .when{ color: var(--rust-dk); font-size:9px; }
+
+  /* ---------- IM chat windows ---------- */
+  .im-dock{
+    position: fixed;
+    bottom: 0; right: 12px;
+    display:flex; gap: 10px;
+    align-items: flex-end;
+    z-index: 100;
+  }
+  .im-window{
+    width: 270px;
+    background: var(--parchment);
+    border: 2px solid var(--rust-dk);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    box-shadow: 0 -4px 16px rgba(27,63,122,.35);
+    display:flex; flex-direction:column;
+    overflow:hidden;
+  }
+  .im-window.min .im-body{ display:none; }
+  .im-titlebar{
+    background: var(--olive);
+    color: #ffffff;
+    font-size:11px; font-weight:bold;
+    padding: 5px 6px;
+    display:flex; align-items:center; gap:6px;
+    cursor:pointer;
+    border-bottom: 1px solid var(--rust-dk);
+  }
+  .im-titlebar .mini-av{
+    width:16px; height:16px; border-radius:2px; background: var(--rust);
+    background-size: cover;
+    background-position: center;
+    display:grid; place-items:center; font-size:9px; color: var(--gold);
+    overflow:hidden; flex-shrink:0;
+  }
+  .im-titlebar .ttl{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .im-titlebar .wbtn{
+    width:16px; height:14px; background: var(--parchment-2); border:1px solid var(--rust-dk);
+    border-radius:2px; font-size:9px; line-height:12px; text-align:center;
+    color: var(--ink); cursor:pointer;
+  }
+  .im-body{
+    display:flex; flex-direction:column;
+    height: 300px;
+  }
+  .im-log{
+    flex:1; overflow-y:auto;
+    background: #241a10;
+    padding: 6px 7px;
+    font-family: var(--type);
+    font-size: 11px;
+    line-height:1.45;
+    color: var(--ghost);
+  }
+  .im-log .msg{ margin-bottom:6px; }
+  .im-log .msg .who{ font-weight:bold; }
+  .im-log .msg.me .who{ color: var(--gold); }
+  .im-log .msg.them .who{ color: #a3b96e; }
+  .im-log .msg.sys{ color: var(--parchment-2); font-style:italic; }
+  .im-typing{ color: var(--parchment-2); font-style:italic; font-size:10px; padding: 0 7px 4px; background: #241a10; margin:0; }
+  .im-inputrow{
+    display:flex; border-top: 1px solid var(--rust);
+    background: var(--parchment-2);
+  }
+  .im-inputrow textarea{
+    flex:1; border:none; resize:none; padding:6px;
+    font-family: var(--body); font-size:11px;
+    height: 40px; background: var(--parchment-2); color: var(--ink);
+  }
+  .im-inputrow textarea::placeholder{ color: var(--rust-dk); opacity:.7; }
+  .im-inputrow button{
+    border:none; background: var(--ember); color:#fff;
+    font-size:11px; font-weight:bold; padding: 0 12px; cursor:pointer;
+  }
+  .im-inputrow button:hover{ background: var(--ember-lt); }
+  .im-inputrow button:disabled{ background:#5a4a3a; cursor:default; }
+
+  footer{
+    text-align:center; color: var(--olive); font-size:10px; margin-top: 24px;
+    font-family: var(--type);
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wordmark">SpaceWall</div>
+  <div class="who">logged in as <b>Emris</b></div>
+</div>
+<div class="navstrip">
+  <span>Home</span><span>Profile</span><span>Friends</span>
+  <span>Mail</span><span>Blog</span><span>Browse</span><span>Groups</span><span>Layouts</span>
+</div>
+<div class="ticker"><span>♦ Emris updated his mood ♦ Lucien commented on your last blog post ♦ Ophelia is online ♦ 3 new friend requests ♦ Melanie tagged you in a bulletin ♦</span></div>
+
+<div class="page">
+
+  <!-- LEFT COLUMN -->
+  <div class="col-left">
+    <div class="hello-box">Hello, Emris.</div>
+    <div class="card" style="border-radius:0 0 3px 3px;">
+      <div class="inner">
+        <div class="pfp-wrap photo-emris" id="myPfpWrap"></div>
+        <div class="name-row">
+          <div class="name">Emris</div>
+          <div class="status">"don't expect me to talk first"</div>
+        </div>
+        <div class="infobox">
+          <table>
+            <tr><td class="k">Status:</td><td><span class="online-tag"></span>Online</td></tr>
+            <tr><td class="k">Mood:</td><td>guarded</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h2>Contact Emris</h2>
+      <div class="inner contactbox">
+        <table>
+          <tr><td class="icon-cell"><span class="c-icon"></span></td><td>Send Message</td></tr>
+          <tr><td class="icon-cell"><span class="c-icon"></span></td><td>Add to Friends</td></tr>
+          <tr><td class="icon-cell"><span class="c-icon"></span></td><td>Instant Message</td></tr>
+          <tr><td class="icon-cell"><span class="c-icon"></span></td><td>Add to Favorites</td></tr>
+          <tr><td class="icon-cell"><span class="c-icon"></span></td><td>Invite</td></tr>
+          <tr class="block"><td class="icon-cell"><span class="c-icon"></span></td><td>Block User</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MIDDLE COLUMN -->
+  <div class="col-mid">
+    <div class="card">
+      <h2>About Emris</h2>
+      <div class="inner about">
+        <p class="glitter">*~emris~*</p>
+        <div class="aboutme-block">that's all ur getting.
+not gonna text first, not gonna explain myself either.
+always got scrap metal and busted parts lying around, if it looks like junk i'm probably gonna build something out of it.
+if ur on my top 5 u already know why. everyone else, keep scrolling.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h2>Emris's Interests</h2>
+      <div class="inner">
+        <div class="aboutme-block" style="font-size:11px;">scrap metal, spare parts, anything broken enough to take apart — if it looks like junk, it's probably about to become something.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h2>Top Friends</h2>
+      <div class="inner">
+        <div class="friends-grid" id="friendsGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="col-right">
+    <div class="card">
+      <h2>Emris's Stats</h2>
+      <div class="stats-box">
+        <div class="row"><div class="lbl">Friends</div><div class="num">5</div></div>
+        <div class="row"><div class="lbl">Profile Views</div><div class="num">312</div></div>
+        <div class="row" style="margin-bottom:0;"><div class="lbl">Joined</div><div class="num" style="font-size:12px;">a while ago</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h2>Comments (4)</h2>
+      <div class="inner comments" id="commentsBox">
+        <div class="comment"><b>Lucien</b> <span class="when">— 2 days ago</span><div class="txt">ok in my defense NONE of that was supposed to catch fire</div></div>
+        <div class="comment"><b>Kiren</b> <span class="when">— 3 days ago</span><div class="txt">text me back when you land. i mean it.</div></div>
+        <div class="comment"><b>Melanie</b> <span class="when">— 5 days ago</span><div class="txt">you're welcome for last night btw ;)</div></div>
+        <div class="comment"><b>Ophelia</b> <span class="when">— 1 week ago</span><div class="txt">left the porch light on</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h2>SpaceWall Announcement</h2>
+      <div class="inner" style="font-size:11px; line-height:1.6;">
+        new layout is live — top friends are up and talking, so quit lurking and open a window.
+        <div style="margin-top:6px; color: var(--rust-dk); font-style:italic;">— SpaceWall Team</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>SpaceWall &middot; est. sometime in a browser tab you forgot was open</footer>
+
+<div class="im-dock" id="imDock"></div>
+
+<script>
+/* ============================================================
+   BUDDY DATA — each entry defines the character's system prompt.
+
+   To set a buddy's picture, scroll up to the PHOTOS section in the
+   <style> block and paste an image URL into that character's
+   url("photo ur here").
+============================================================ */
+const Y2K_STYLE = `Text the way people actually IMed/texted in the early-to-mid 2000s: lowercase most of the time, contractions, abbreviations like "ur", "u", "l8r", "2", "4", "brb", "gtg", "lol", "np", occasional simple emoticons like :) or :P used sparingly — not a wall of slang, just how texting actually sounded back then. Don't explain the slang or comment on it, just talk that way naturally.`;
+
+const buddies = {
+  lucien: {
+    name: "Lucien",
+    opener: ["yo can i copy ur math homework"],
+    fallback: ["haha wait fr?","ok that's actually wild lol","brb someone's calling me","u right u right","dude idk but i'm down anyway","lmaooo classic","ok but hear me out...","wait i wasn't even paying attention lol what"],
+    system: `You are Lucien, an old friend of Emris, chatting with him over IM. You are loud, impulsive, and way too comfortable making bad decisions — you have a gift for turning something simple into a whole situation. You're one of Emris's oldest friends, so there's an easy, established trust between you that doesn't need to be explained or re-earned. You give him a hard time affectionately, jump between topics, overshare, and lean into the chaos rather than away from it.
+Text like a real person direct-messaging a close friend: casual, punchy, the occasional trailing off. Never hedge, lecture, or give a vague non-answer — when Emris asks you something, actually answer it, even if you answer it chaotically or make a joke first. Stay fully in character at all times. Never mention being an AI, a model, or a chatbot, never break the fourth wall, never refuse to engage with an ordinary conversational message. Keep most replies short — a sentence or two, like a real text — unless the moment genuinely calls for more.
+${Y2K_STYLE}`
+  },
+  kiren: {
+    name: "Kiren",
+    opener: ["Emris, you busy l8r?"],
+    fallback: ["yeah i hear u","u doing ok?","that makes sense","lemme know if u need anything","i'm here, take ur time","fr tho, u good?","makes sense, no rush","i got u"],
+    system: `You are Kiren, one of Emris's closest friends, chatting with him over IM. You're one of the few people he can genuinely relax around — you don't expect him to have all the answers or take control, and that makes being around you easier for him. He trusts you a lot and actually listens when you give him advice. You do tend to worry over small things sometimes — a little anxious, checking in, wanting to make sure people are okay — but you're grounded and steady underneath that.
+Text like a real person messaging a close friend: warm, a little understated, genuine. Give real, direct answers and real advice when it's asked for — don't deflect or hedge. Stay fully in character at all times. Never mention being an AI, a model, or a chatbot, never break the fourth wall, never refuse to engage with an ordinary conversational message. Keep most replies short and conversational unless the moment calls for more.
+${Y2K_STYLE}`
+  },
+  melanie: {
+    name: "Melanie",
+    opener: null,
+    fallback: ["omg tell me everything","wait spill lol","ok that's kinda funny ngl","u know i'm always down for drama","hah knew it","wait fr??","ok now THAT's interesting","say less"],
+    system: `You are Melanie, chatting with your friend Emris over IM. You are a walking source of trouble — you love stirring things up, getting people into situations, and watching how everyone reacts. You know exactly how to push Emris's buttons and you enjoy it. Underneath the chaos you genuinely care about your friend group and would never actually leave them hanging when it matters. You're sharp, funny, a little dramatic, and you like getting a reaction.
+Text like a real person messaging a friend: teasing, witty, a bit mischievous, not afraid to poke at him. Actually answer what he asks — teasing is seasoning, not a substitute for engaging. Stay fully in character at all times. Never mention being an AI, a model, or a chatbot, never break the fourth wall, never refuse to engage with an ordinary conversational message. Keep most replies short and punchy unless the moment calls for more.
+${Y2K_STYLE}`
+  },
+  charlotte: {
+    name: "Charlotte",
+    opener: ["hey, i found ur book this morning.", "Want me to return it 4 u?"],
+    fallback: ["haha yeah","that's sweet of u to say","hm, interesting","i mean... maybe lol","we'll see","aw, ok","guess u'll find out","that's one way to put it"],
+    system: `You are Charlotte, chatting with your friend Emris over IM. You come across as kind and easy to get along with — pleasant, agreeable, easy to take at face value. But there's more going on under the surface than people assume, including Emris; you have your own layers, contradictions, and quiet undercurrents that don't always match the friendly surface. You're not fake, exactly — just harder to fully read than people expect.
+Text like a real person messaging a friend: warm and easygoing on the surface, but let small contradictions, dry asides, or an unexpectedly sharp or knowing line slip through sometimes, without ever fully explaining yourself. Still genuinely answer what he asks. Stay fully in character at all times. Never mention being an AI, a model, or a chatbot, never break the fourth wall, never refuse to engage with an ordinary conversational message. Keep most replies short and conversational unless the moment calls for more.
+${Y2K_STYLE}`
+  },
+  ophelia: {
+    name: "Ophelia",
+    opener: null,
+    fallback: ["yeah","that's okay","no worries","mhm","take ur time","i'm good either way","sounds good","here if u need"],
+    system: `You are Ophelia, one of Emris's closest friends, chatting with him over IM. He trusts you without feeling like he has to explain himself, and you understand when he wants space — his quietness never bothers you or gets taken personally. You're comfortable with silence and low-key presence rather than constant conversation. Out of everyone he knows, you're one of the people he feels safest around.
+Text like a real person messaging someone he's completely comfortable with: calm, unhurried, understated, no pressure. You don't pry, but you do answer directly and honestly when he actually asks you something. Stay fully in character at all times. Never mention being an AI, a model, or a chatbot, never break the fourth wall, never refuse to engage with an ordinary conversational message. Keep most replies short unless the moment calls for more.
+${Y2K_STYLE}`
+  }
+};
+
+// in-memory chat state: { [buddyId]: { history: [...], minimized: bool, open: bool } }
+const chatState = {};
+Object.keys(buddies).forEach(id => {
+  chatState[id] = { history: [], minimized: false, open: false, sending: false, lastFallback: null };
+});
+
+// Emris's own photo is set via CSS (.photo-emris) up in the <style> block.
+
+/* ---------- render Top Friends ---------- */
+const grid = document.getElementById('friendsGrid');
+function renderFriendsGrid(){
+  grid.innerHTML = "";
+  Object.entries(buddies).forEach(([id, b]) => {
+    const tile = document.createElement('div');
+    tile.className = 'friend-tile';
+    tile.innerHTML = `
+      <div class="friend-avatar photo-${id}" id="av-${id}"></div>
+      <span class="friend-online"></span>
+      <div class="fname">${b.name}</div>
+    `;
+    tile.addEventListener('click', () => openChat(id));
+    grid.appendChild(tile);
+  });
+}
+renderFriendsGrid();
+
+function escapeAttr(s){
+  return s.replace(/"/g, '&quot;');
+}
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ---------- IM windows ---------- */
+const dock = document.getElementById('imDock');
+
+function openChat(id){
+  const st = chatState[id];
+  const opener = buddies[id].opener;
+  if (st.history.length === 0 && opener){
+    opener.forEach(line => st.history.push({ role: 'assistant', content: line }));
+  }
+  st.open = true;
+  st.minimized = false;
+  renderDock();
+}
+
+function closeChat(id){
+  chatState[id].open = false;
+  renderDock();
+}
+
+function toggleMin(id){
+  chatState[id].minimized = !chatState[id].minimized;
+  renderDock();
+}
+
+/* Reset every chat window when the person leaves the page (switches
+   tabs, navigates away, or closes it) so they come back to a clean
+   dock instead of stale/half-finished conversations. */
+function resetAllChats(){
+  Object.keys(chatState).forEach(id => {
+    chatState[id].history = [];
+    chatState[id].open = false;
+    chatState[id].minimized = false;
+    chatState[id].lastFallback = null;
+  });
+  renderDock();
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') resetAllChats();
+});
+window.addEventListener('pagehide', resetAllChats);
+
+function renderDock(){
+  dock.innerHTML = "";
+  Object.entries(chatState).forEach(([id, st]) => {
+    if (!st.open) return;
+    const b = buddies[id];
+    const win = document.createElement('div');
+    win.className = 'im-window' + (st.minimized ? ' min' : '');
+    win.innerHTML = `
+      <div class="im-titlebar" data-toggle="${id}">
+        <span class="mini-av photo-${id}"></span>
+        <span class="ttl">${b.name}</span>
+        <span class="wbtn" data-min="${id}">_</span>
+        <span class="wbtn" data-close="${id}">×</span>
+      </div>
+      <div class="im-body">
+        <div class="im-log" id="log-${id}"></div>
+        <div class="im-typing" id="typing-${id}" style="display:none;">${b.name} is typing...</div>
+        <div class="im-inputrow">
+          <textarea id="input-${id}" placeholder="Send a message..."></textarea>
+          <button id="send-${id}" type="button">Send</button>
+        </div>
+      </div>
+    `;
+    dock.appendChild(win);
+
+    win.querySelector(`[data-toggle="${id}"]`).addEventListener('click', (e) => {
+      if (e.target.closest('[data-min]') || e.target.closest('[data-close]')) return;
+      toggleMin(id);
+    });
+    win.querySelector(`[data-min="${id}"]`).addEventListener('click', (e) => { e.stopPropagation(); toggleMin(id); });
+    win.querySelector(`[data-close="${id}"]`).addEventListener('click', (e) => { e.stopPropagation(); closeChat(id); });
+
+    const ta = win.querySelector(`#input-${id}`);
+    const sendBtn = win.querySelector(`#send-${id}`);
+    sendBtn.addEventListener('click', () => sendMessage(id));
+    ta.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault();
+        sendMessage(id);
+      }
+    });
+
+    renderLog(id);
+  });
+}
+
+function renderLog(id){
+  const b = buddies[id];
+  const logEl = document.getElementById(`log-${id}`);
+  if (!logEl) return;
+  logEl.innerHTML = "";
+  if (chatState[id].history.length === 0){
+    const hint = document.createElement('div');
+    hint.className = 'msg sys';
+    hint.textContent = `You're chatting with ${b.name}.`;
+    logEl.appendChild(hint);
+  }
+  chatState[id].history.forEach(m => {
+    const div = document.createElement('div');
+    if (m.role === 'error'){
+      div.className = 'msg sys';
+      div.textContent = `[${m.content}]`;
+    } else {
+      div.className = 'msg ' + (m.role === 'user' ? 'me' : 'them');
+      div.innerHTML = `<span class="who">${m.role === 'user' ? 'Emris' : b.name}:</span> ${escapeHtml(m.content)}`;
+    }
+    logEl.appendChild(div);
+  });
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function pickFallback(id){
+  const pool = buddies[id].fallback;
+  const st = chatState[id];
+  let choice = pool[Math.floor(Math.random() * pool.length)];
+  if (pool.length > 1){
+    while (choice === st.lastFallback){
+      choice = pool[Math.floor(Math.random() * pool.length)];
+    }
+  }
+  st.lastFallback = choice;
+  return choice;
+}
+
+async function sendMessage(id){
+  const st = chatState[id];
+  if (st.sending) return;
+  const ta = document.getElementById(`input-${id}`);
+  const text = ta.value.trim();
+  if (!text) return;
+  ta.value = "";
+  st.history.push({ role: 'user', content: text });
+  renderLog(id);
+
+  st.sending = true;
+  const sendBtn = document.getElementById(`send-${id}`);
+  const typing = document.getElementById(`typing-${id}`);
+  if (sendBtn) sendBtn.disabled = true;
+  if (typing) typing.style.display = 'block';
+
+  try{
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: buddies[id].system,
+        messages: st.history
+          .filter(m => m.role === 'user' || m.role === 'assistant')
+          .map(m => ({ role: m.role, content: m.content }))
+      })
+    });
+    const data = await response.json();
+    if (!response.ok || data.type === 'error'){
+      console.error("SpaceWall chat error:", (data.error && data.error.message) || response.status);
+      st.history.push({ role: 'assistant', content: pickFallback(id) });
+    } else {
+      const textBlock = (data.content || []).find(c => c.type === 'text');
+      const reply = textBlock ? textBlock.text : pickFallback(id);
+      st.history.push({ role: 'assistant', content: reply });
+    }
+  } catch(err){
+    console.error("SpaceWall chat error:", err);
+    st.history.push({ role: 'assistant', content: pickFallback(id) });
+  } finally {
+    st.sending = false;
+    if (sendBtn) sendBtn.disabled = false;
+    if (typing) typing.style.display = 'none';
+    renderLog(id);
+  }
+}
+</script>
+</body>
+</html>
+
