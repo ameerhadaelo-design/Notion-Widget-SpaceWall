@@ -480,6 +480,11 @@ if ur on my top 5 u already know why. everyone else, keep scrolling.</div>
    <style> block and paste an image URL into that character's
    url("photo ur here").
 ============================================================ */
+
+/* PASTE YOUR CLOUDFLARE WORKER URL HERE (see spacewall-proxy-worker.js
+   for setup steps). Until you do, chat falls back to the canned lines. */
+const WORKER_URL = "https://llm-chat-app-templates.ameerhadaelo.workers.dev";
+
 const Y2K_STYLE = `Text the way people actually IMed/texted in the early-to-mid 2000s: lowercase most of the time, contractions, abbreviations like "ur", "u", "l8r", "2", "4", "brb", "gtg", "lol", "np", occasional simple emoticons like :) or :P used sparingly — not a wall of slang, just how texting actually sounded back then. Don't explain the slang or comment on it, just talk that way naturally.`;
 
 const buddies = {
@@ -700,12 +705,10 @@ async function sendMessage(id){
   if (typing) typing.style.display = 'block';
 
   try{
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1000,
         system: buddies[id].system,
         messages: st.history
           .filter(m => m.role === 'user' || m.role === 'assistant')
@@ -734,4 +737,3 @@ async function sendMessage(id){
 </script>
 </body>
 </html>
-
